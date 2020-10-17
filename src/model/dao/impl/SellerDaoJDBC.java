@@ -1,7 +1,13 @@
 package model.dao.impl;
 
+import db.DB;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import model.dao.SellerDao;
+import model.entities.Department;
 import model.entities.Seller;
 
 /**
@@ -9,6 +15,12 @@ import model.entities.Seller;
  * @author P. Godoy
  */
 public class SellerDaoJDBC implements SellerDao {
+
+    private Connection conn;
+
+    public SellerDaoJDBC(Connection conn) {
+        this.conn = conn;
+    }
 
     @Override
     public void insert(Seller obj) {
@@ -27,7 +39,26 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public Seller findByID(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        PreparedStatement prst = null;
+        ResultSet rs = null;
+        Seller sel = null;
+        try {
+            prst = conn.prepareStatement("select s.*, d.Name as Department from department d, seller s where s.DepartmentId = d.Id and s.Id = ? "); //Espera uma string que é o comando sql, e atribuindo ao result set
+
+            prst.setInt(1, id);
+
+            rs = prst.executeQuery();
+
+            while (rs.next()) { //enquanto existir um proximo
+                return sel = new Seller(rs.getInt("Id"), rs.getString("Name"), rs.getString("Email"), rs.getDate("BirthDate"), rs.getDouble("BaseSalary"), new Department(rs.getInt("DepartmentId"), rs.getString("Department")));
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new db.DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(prst);
+            DB.closeSResultSet(rs);
+        }
     }
 
     @Override
