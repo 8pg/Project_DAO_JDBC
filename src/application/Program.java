@@ -2,7 +2,7 @@ package application;
 
 /**
  *
- * @author P. Godoy
+ * @author 8pg
  */
 public class Program {
 
