@@ -49,10 +49,34 @@ public class SellerDaoJDBC implements SellerDao {
 
             rs = prst.executeQuery();
 
-            while (rs.next()) { //enquanto existir um proximo
+            if (rs.next()) { //enquanto existir um proximo
                 return sel = new Seller(rs.getInt("Id"), rs.getString("Name"), rs.getString("Email"), rs.getDate("BirthDate"), rs.getDouble("BaseSalary"), new Department(rs.getInt("DepartmentId"), rs.getString("Department")));
             }
             return null;
+        } catch (SQLException e) {
+            throw new db.DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(prst);
+            DB.closeSResultSet(rs);
+        }
+    }
+
+    @Override
+    public List<Seller> findByDepartment(Department department) {
+        PreparedStatement prst = null;
+        ResultSet rs = null;
+        List<Seller> list = null;
+
+        try {
+            prst = conn.prepareCall("select s.*, d.Name as Department from department d, seller s where d.Id = s.DepartmentId and d.Id = ? order by Name");
+            prst.setInt(1, department.getId());
+
+            rs = prst.executeQuery();
+
+            while (rs.next()) {
+                list.add(new Seller(rs.getInt("Id"), rs.getString("Name"), rs.getString("Email"), rs.getDate("BirthDate"), rs.getDouble("BaseSalary"), department));
+            }
+            return list;
         } catch (SQLException e) {
             throw new db.DbException(e.getMessage());
         } finally {
