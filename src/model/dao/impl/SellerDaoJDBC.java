@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import model.dao.SellerDao;
 import model.entities.Department;
@@ -49,7 +50,7 @@ public class SellerDaoJDBC implements SellerDao {
 
             rs = prst.executeQuery();
 
-            if (rs.next()) { //enquanto existir um proximo
+            if (rs.next()) { //se existir um proximo
                 return sel = new Seller(rs.getInt("Id"), rs.getString("Name"), rs.getString("Email"), rs.getDate("BirthDate"), rs.getDouble("BaseSalary"), new Department(rs.getInt("DepartmentId"), rs.getString("Department")));
             }
             return null;
@@ -65,15 +66,18 @@ public class SellerDaoJDBC implements SellerDao {
     public List<Seller> findByDepartment(Department department) {
         PreparedStatement prst = null;
         ResultSet rs = null;
-        List<Seller> list = null;
+        List<Seller> list = new ArrayList<>();
 
         try {
-            prst = conn.prepareCall("select s.*, d.Name as Department from department d, seller s where d.Id = s.DepartmentId and d.Id = ? order by Name");
+            prst = conn.prepareStatement("select s.*, d.Name as Department from department d, seller s where d.Id = s.DepartmentId and d.Id = ? order by Name");
             prst.setInt(1, department.getId());
 
             rs = prst.executeQuery();
 
             while (rs.next()) {
+                if (department.getName() == null) {
+                    department = new Department(rs.getInt("DepartmentId"), rs.getString("Department"));
+                }
                 list.add(new Seller(rs.getInt("Id"), rs.getString("Name"), rs.getString("Email"), rs.getDate("BirthDate"), rs.getDouble("BaseSalary"), department));
             }
             return list;
