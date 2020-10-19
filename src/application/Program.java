@@ -50,6 +50,14 @@ public class Program {
 
         System.out.println("Added on Id row: " + selIns.getId());
         System.out.println("");
+
+        //Update Sellers
+        System.out.println("=== Test #5: Update Sellers ================================");
+        Seller selUpd = new Seller(8, "Suzanne Collins", "suzanne@gmail.com", sdf.parse("10/08/1962"), 4200.00, new Department(4, null));
+        sellerDao.update(selUpd);
+
+        System.out.println("Update Completed");
+        System.out.println("");
     }
 
 }
