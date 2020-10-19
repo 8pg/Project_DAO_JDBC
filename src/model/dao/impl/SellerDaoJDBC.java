@@ -28,7 +28,34 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void insert(Seller obj) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        PreparedStatement prst = null;
+        ResultSet rs = null;
+        try {
+            prst = conn.prepareStatement("INSERT INTO seller (Name, Email, BirthDate, BaseSalary, DepartmentID) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+
+            prst.setString(1, obj.getName());
+            prst.setString(2, obj.getEmail());
+            prst.setDate(3, new java.sql.Date(obj.getBirthDate().getTime())); //Instancia um obj sql.Date que recebe uma data convertida em milissegundos, é passada a data do obj convertendo-a em milissegundos pelo getTime()
+            prst.setDouble(4, obj.getBaseSalary());
+            prst.setInt(5, obj.getDepartment().getId());
+
+            int rowsAffected = prst.executeUpdate();
+
+            if (rowsAffected > 0) {
+                rs = prst.getGeneratedKeys();
+                while (rs.next()) {
+                    int id = rs.getInt(1);
+                    obj.setId(id); //Seta o Id no objeto referente a contagem das linhas do começo ate null-1
+                }
+            } else {
+                throw new db.DbException("No row affected!");
+            }
+        } catch (SQLException e) {
+            throw new db.DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(prst);
+            DB.closeSResultSet(rs);
+        }
     }
 
     @Override
