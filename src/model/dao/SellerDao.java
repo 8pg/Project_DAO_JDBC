@@ -20,5 +20,5 @@ public interface SellerDao {
 
     public List<Seller> findByDepartment(Department department);
 
-    public void findAll(List<Seller> list);
+    public List<Seller> findAll();
 }

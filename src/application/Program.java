@@ -20,19 +20,29 @@ public class Program {
 
         //Find Seller by ID
         System.out.println("=== Test #1: Seller findByID | Id: 1 =======================");
-        sellerDao.findByID(1);
+        Seller selId = sellerDao.findByID(1);
 
-        System.out.println(sellerDao);
+        System.out.println(selId);
         System.out.println("");
 
         //Find Sellers by Department
         System.out.println("=== Test #2: Seller findByDepartment | DepartmentId: 2 =====");
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        List<Seller> listSellerDao = sellerDao.findByDepartment(new Department(2, null));
+        List<Seller> listSellerDepartment = sellerDao.findByDepartment(new Department(2, null));
 
-        for (Seller seller : listSellerDao) {
+        for (Seller seller : listSellerDepartment) {
             System.out.println(seller);
         }
+        System.out.println("");
+
+        //Find All Sellers
+        System.out.println("=== Test #3: findAll Sellers ===============================");
+        List<Seller> selAll = sellerDao.findAll();
+
+        for (Seller seller : selAll) {
+            System.out.println(seller);
+        }
+        System.out.println("");
     }
 
 }

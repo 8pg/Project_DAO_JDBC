@@ -5,8 +5,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
@@ -90,8 +93,31 @@ public class SellerDaoJDBC implements SellerDao {
     }
 
     @Override
-    public void findAll(List<Seller> list) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List<Seller> findAll() {
+        Statement st = null;
+        ResultSet rs = null;
+        List<Seller> list = new ArrayList<>();
+
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery("select s.*, d.Name as Department from department d, seller s where d.Id = s.DepartmentId order by Name");
+
+            Map<Integer, Department> map = new HashMap<>();
+            while (rs.next()) {
+                Department dep = map.get(rs.getInt("DepartmentId"));
+                if (dep == null) {
+                    dep = new Department(rs.getInt("DepartmentId"), rs.getString("Department"));
+                    map.put(rs.getInt("DepartmentId"), dep);
+                }
+                list.add(new Seller(rs.getInt("Id"), rs.getString("Name"), rs.getString("Email"), rs.getDate("BirthDate"), rs.getDouble("BaseSalary"), dep));
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new db.DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+            DB.closeSResultSet(rs);
+        }
     }
 
 }
