@@ -56,7 +56,14 @@ public class Program {
         Seller selUpd = new Seller(8, "Suzanne Collins", "suzanne@gmail.com", sdf.parse("10/08/1962"), 4200.00, new Department(4, null));
         sellerDao.update(selUpd);
 
-        System.out.println("Update Completed");
+        System.out.println("Update Completed, 1 Row affected!");
+        System.out.println("");
+
+        //Delete Sellers
+        System.out.println("=== Test #6: Delete Sellers ================================");
+        sellerDao.deleteByID(8);
+
+        System.out.println("Delete Completed, 1 Row affected!");
         System.out.println("");
     }
 
